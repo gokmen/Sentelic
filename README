@@ -1,3 +1,6 @@
+Sentelic
+--------
+
 Sentelic Mouse (Asus UX31) disable daemon while typing.
 
 To run it just type:
@@ -12,7 +15,7 @@ If you need something different from its current settings which are:
 
 You can define different ones in /etc/sentelic.conf:
 
-timeout=1.5
-device=/differen/device/path
+    timeout=1.5
+    device=/different/device/path
 
-
+You may start the daemon in system boot.
