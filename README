@@ -3,6 +3,8 @@ Sentelic
 
 Sentelic Mouse (Asus UX31) disable daemon while typing.
 
+First install Xlib and Udev Python bindings. (Udev Python bindings are optional though)
+
 You need root priviligese to run the daemon.
 
  $ sudo ./sentelic.py
