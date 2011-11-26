@@ -42,7 +42,6 @@ def getConfigValue(key):
                 return line.split('=')[1].strip()
     return None
 
-# Find proper device to control
 # Sentelic Mouse touch to click handler class
 class SentelicHandler:
 
