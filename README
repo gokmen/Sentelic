@@ -3,19 +3,10 @@ Sentelic
 
 Sentelic Mouse (Asus UX31) disable daemon while typing.
 
-To run it just type:
+You need root priviligese to run the daemon.
 
  $ sudo ./sentelic.py
 
-If you need something different from its current settings which are:
-
- - Default timeout is 0.9 sec.
- - Uses dmesg output to find correct device path
-   Usually its: /sys/devices/platform/i8042/serio4
-
-You can define different ones in /etc/sentelic.conf:
+Default timeout is 0.9 sec.  You can define the timeout in /etc/sentelic.conf:
 
     timeout=1.5
-    device=/different/device/path
-
-You may start the daemon in system boot.
