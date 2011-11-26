@@ -43,43 +43,44 @@ def getConfigValue(key):
     return None
 
 # Find proper device to control
-try:
-    DEVICE_ID = getConfigValue('device')
-    if not DEVICE_ID:
-        # Hacky.
-        DEVICE_ID = os.popen('dmesg | grep Sentelic | grep i8042').read().strip().split()[-1].split('serio')[1][0]
-    SYSPATH = "/sys/devices/platform/i8042/serio%d/" % int(DEVICE_ID)
-finally:
-    if not DEVICE_ID:
-        print "Error: Sentelic mouse not found!"
-        sys.exit(1)
-    else:
-        REG_FILE = os.path.join(SYSPATH, 'setreg')
-        STATE_FILE = os.path.join(SYSPATH, 'flags')
-        print "Info: Sentelic device found at %s " % SYSPATH
-
 # Sentelic Mouse touch to click handler class
 class SentelicHandler:
 
     def __init__(self):
+        #Try to get the Sentelic touchpad device path from udev, fallback to
+        #hardcoded one
+        try:
+            from pyudev import Context
+            ctx = Context()
+
+            for dev in ctx.list_devices(subsystem='input', ID_INPUT_MOUSE=True):
+                if dev.sys_name.startswith('input'):
+                    SYS_PATH = dev.sys_path.split('input')[0]
+        except ImportError:
+            SYS_PATH = "/sys/devices/platform/i8042/serio4"
+
+        self.REG_FILE = os.path.join(SYS_PATH, 'setreg')
+        self.STATE_FILE = os.path.join(SYS_PATH, 'flags')
+        print "Info: Sentelic device found at %s " % SYS_PATH
+
         self.__enable_register()
         self.state = False
         self.setState(True, True)
 
     def __enable_register(self):
         try:
-            open(REG_FILE, 'w').write('0x90 0x80')
+            open(self.REG_FILE, 'w').write('0x90 0x80')
         except:
-            print "Error: Failed to update register file at %s" % REG_FILE
+            print "Error: Failed to update register file at %s" % self.REG_FILE
             sys.exit(1)
 
     def setState(self, state, force = False):
         if not state == self.state or force:
             try:
-                open(STATE_FILE, 'w').write({True:'C', False:'c'}[state])
+                open(self.STATE_FILE, 'w').write({True:'C', False:'c'}[state])
                 self.state = state
             except:
-                print "Error: Failed to update state at %s" % STATE_FILE
+                print "Error: Failed to update state at %s" % self.STATE_FILE
                 sys.exit(1)
 
     def disable(self):
@@ -161,6 +162,10 @@ class XKeyEventThread(threading.Thread):
                 self.fireTimer()
 
 if __name__ == '__main__':
+
+    if os.geteuid():
+        print "You have to run the script as root!"
+        os._exit(1)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
