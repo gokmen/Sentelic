@@ -54,7 +54,7 @@ class SentelicHandler:
             ctx = Context()
 
             for dev in ctx.list_devices(subsystem='input', ID_INPUT_MOUSE=True):
-                if dev.sys_name.startswith('input'):
+                if dev.sys_name.startswith('input') and 'serio' in dev.sys_path:
                     SYS_PATH = dev.sys_path.split('input')[0]
         except ImportError:
             SYS_PATH = "/sys/devices/platform/i8042/serio4"
